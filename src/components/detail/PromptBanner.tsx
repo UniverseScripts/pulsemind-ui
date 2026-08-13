@@ -48,7 +48,7 @@ export function PromptBanner({
                 Risk prompt · awaiting clinician review
               </span>
             </span>
-            <span className="font-mono text-[10px] tabular-nums text-ink-400">
+            <span className="font-mono text-xs tabular-nums text-ink-400">
               raised {formatAge(minutesSince(prompt.raised_at, now))} ago
             </span>
           </div>
@@ -57,12 +57,12 @@ export function PromptBanner({
             Risk level reached {prompt.band_at_raise}. Clinical review is requested.
           </h2>
 
-          <p className="mt-2 max-w-[58ch] text-2xs leading-relaxed text-ink-700">
+          <p className="mt-2 max-w-[58ch] text-xs leading-relaxed text-ink-700">
             {driverName} is the largest contribution to this reading, at{' '}
             {formatPercent(driverShare, 1)} of the score.
           </p>
 
-          <p className="mt-3 text-[10px] leading-relaxed text-ink-400">
+          <p className="mt-3 text-xs leading-relaxed text-ink-400">
             Recording a review closes this prompt. It does not silence an alarm — PulseMind
             raises none — and it does not change the risk level.
           </p>

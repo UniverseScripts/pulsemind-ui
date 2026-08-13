@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router'
+import { WardProvider } from './data/WardProvider'
 import { AppHeader } from './components/chrome/AppHeader'
 import { SafetyFooter } from './components/chrome/SafetyFooter'
 import { PatientOverviewBoard } from './screens/PatientOverviewBoard'
@@ -7,6 +8,7 @@ import { ParameterDetail } from './screens/ParameterDetail'
 
 export default function App() {
   return (
+    <WardProvider>
     <div className="flex min-h-screen flex-col bg-page">
       <AppHeader />
       <main className="flex-1">
@@ -22,5 +24,6 @@ export default function App() {
       </main>
       <SafetyFooter />
     </div>
+    </WardProvider>
   )
 }

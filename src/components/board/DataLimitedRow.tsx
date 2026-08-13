@@ -57,11 +57,11 @@ export function DataLimitedRow({ assessment, selected, onSelect, now }: DataLimi
           </span>
 
           <span className="hidden shrink-0 flex-col items-end gap-0.5 xl:flex">
-            <span className="font-mono text-[10px] tabular-nums text-ink-500">
+            <span className="font-mono text-xs tabular-nums text-ink-500">
               {formatPercent(assessment.imputed_share)} defaulted ·{' '}
               {formatPercent(assessment.documentation_share)} charting
             </span>
-            <span className="font-mono text-[10px] tabular-nums text-ink-400">
+            <span className="font-mono text-xs tabular-nums text-ink-400">
               updated {formatAge(minutesSince(assessment.assessed_at, now))}
             </span>
           </span>

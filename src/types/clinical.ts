@@ -113,13 +113,16 @@ export interface ClinicianReview {
   clinician: string
 }
 
+export type DeviceState = 'streaming' | 'available' | 'intermittent' | 'offline'
+
 /** An input source such as a ventilator or bedside monitor. */
 export interface InputDevice {
   label: string
   device_make_model: string
   device_id: string
-  state: string
-  detail: string
+  state: DeviceState
+  /** When this source was last heard from. Rendered as a live counter. */
+  last_signal_at: string
 }
 
 // ---------------------------------------------------------------------------

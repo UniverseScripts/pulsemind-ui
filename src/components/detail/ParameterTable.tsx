@@ -28,23 +28,26 @@ export function ParameterTable({ patientId, parameters, contributors }: Paramete
           Every value carries where it came from. A value without its source states a
           population statistic in a clinical voice.
         </p>
+        {/* Counted over the eleven displayed parameters. The "model inputs defaulted"
+            figure on the reading-state panel is a share over the model's whole feature
+            set, which is a different quantity — the two are never equal. */}
         <p className="font-mono text-2xs tabular-nums text-prov-default">
-          {defaultedCount} of {parameters.length} on population defaults
+          {defaultedCount} of these {parameters.length} on population defaults
         </p>
       </div>
 
       {/* Column heads, desktop only — the mobile layout stacks and labels inline. */}
       <div className="hidden border-b border-rule pb-1.5 md:flex md:items-center md:gap-4">
-        <span className="flex-1 text-[10px] font-semibold uppercase tracking-[0.07em] text-ink-400">
+        <span className="flex-1 text-xs font-semibold uppercase tracking-[0.07em] text-ink-400">
           Parameter
         </span>
-        <span className="w-24 text-right text-[10px] font-semibold uppercase tracking-[0.07em] text-ink-400">
+        <span className="w-24 text-right text-xs font-semibold uppercase tracking-[0.07em] text-ink-400">
           Latest
         </span>
-        <span className="w-48 text-[10px] font-semibold uppercase tracking-[0.07em] text-ink-400">
+        <span className="w-48 text-xs font-semibold uppercase tracking-[0.07em] text-ink-400">
           Source
         </span>
-        <span className="w-28 text-[10px] font-semibold uppercase tracking-[0.07em] text-ink-400">
+        <span className="w-28 text-xs font-semibold uppercase tracking-[0.07em] text-ink-400">
           Model use
         </span>
         <span className="w-4" />
@@ -58,7 +61,7 @@ export function ParameterTable({ patientId, parameters, contributors }: Paramete
 
         return (
           <div key={group}>
-            <p className="border-b border-rule-faint pb-1 pt-3.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-500">
+            <p className="border-b border-rule-faint pb-1 pt-3.5 text-xs font-semibold uppercase tracking-[0.08em] text-ink-500">
               {group}
             </p>
 
@@ -74,7 +77,7 @@ export function ParameterTable({ patientId, parameters, contributors }: Paramete
                 >
                   <span className="min-w-[9rem] flex-1">
                     <span className="block text-2xs text-ink-950">{definition.label}</span>
-                    <span className="block text-[10px] text-ink-400">
+                    <span className="block text-xs text-ink-400">
                       {definition.description}
                     </span>
                   </span>
@@ -95,7 +98,7 @@ export function ParameterTable({ patientId, parameters, contributors }: Paramete
                   <span className="w-28">
                     <span
                       className={cn(
-                        'text-[10px] font-medium uppercase tracking-[0.06em]',
+                        'text-xs font-medium uppercase tracking-[0.06em]',
                         isFactor ? 'text-ink-950' : 'text-ink-400',
                       )}
                     >

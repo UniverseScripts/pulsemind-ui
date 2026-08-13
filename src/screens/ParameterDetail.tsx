@@ -2,14 +2,15 @@ import { Link, useParams } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
 import type { ParameterName } from '../types/clinical'
 import { isScored } from '../types/clinical'
-import { getAssessment, getParameterHistory } from '../data/feed'
+import { getParameterHistory } from '../data/feed'
+import { useAssessment } from '../data/WardProvider'
 import { PARAMETERS } from '../data/parameters'
 import { useClock } from '../hooks/useClock'
 import { PROVENANCE_STYLES } from '../lib/bandStyles'
 import { cn } from '../lib/cn'
 import { formatAge, formatPercent, formatValue } from '../lib/format'
 import { ProvenanceTrace } from '../components/charts/ProvenanceTrace'
-import { Eyebrow } from '../components/ui/Eyebrow'
+import { SectionHeading } from '../components/ui/SectionHeading'
 import { Panel } from '../components/ui/Panel'
 import { ProvenanceValue } from '../components/ui/ProvenanceValue'
 
@@ -17,7 +18,7 @@ export function ParameterDetail() {
   const { patientId = '', parameterName = '' } = useParams()
   const now = useClock()
 
-  const assessment = getAssessment(patientId)
+  const assessment = useAssessment(patientId)
   const definition = PARAMETERS.find((parameter) => parameter.name === parameterName)
 
   if (!assessment || !definition) {
@@ -69,7 +70,7 @@ export function ParameterDetail() {
               key={parameter.name}
               to={`/patient/${patientId}/parameter/${parameter.name}`}
               className={cn(
-                'rounded-[2px] border px-2 py-1 font-mono text-[10px] transition-colors',
+                'rounded-[2px] border px-2 py-1 font-mono text-xs transition-colors',
                 parameter.name === definition.name
                   ? 'border-ink-950 bg-ink-950 text-surface'
                   : 'border-rule bg-surface text-ink-500 hover:border-rule-strong',
@@ -84,7 +85,7 @@ export function ParameterDetail() {
       <div className="flex flex-col gap-4">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Panel className="p-4">
-            <Eyebrow>Current value</Eyebrow>
+            <SectionHeading>Current value</SectionHeading>
             <div className="mt-3">
               <ProvenanceValue
                 value={reading.value}
@@ -97,16 +98,16 @@ export function ParameterDetail() {
           </Panel>
 
           <Panel className="p-4">
-            <Eyebrow>Source</Eyebrow>
+            <SectionHeading>Source</SectionHeading>
             <p className={cn('mt-3 text-sm font-medium', provenance.ink)}>
               {provenance.glyph && <span aria-hidden="true">{provenance.glyph} </span>}
               {provenance.label}
             </p>
-            <p className="mt-1.5 text-2xs leading-relaxed text-ink-500">{provenance.meaning}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-ink-500">{provenance.meaning}</p>
           </Panel>
 
           <Panel className="p-4">
-            <Eyebrow>Last measured</Eyebrow>
+            <SectionHeading>Last measured</SectionHeading>
             {reading.source === 'cohort_default' ? (
               <>
                 <p className="mt-3 font-num text-lg text-ink-950">Never</p>
@@ -127,7 +128,7 @@ export function ParameterDetail() {
           </Panel>
 
           <Panel className="p-4">
-            <Eyebrow>Model use</Eyebrow>
+            <SectionHeading>Model use</SectionHeading>
             <p
               className={cn(
                 'mt-3 text-sm font-medium',
@@ -136,7 +137,7 @@ export function ParameterDetail() {
             >
               {isScoreFactor ? 'Score factor' : 'Available'}
             </p>
-            <p className="mt-1.5 text-2xs leading-relaxed text-ink-500">
+            <p className="mt-1.5 text-xs leading-relaxed text-ink-500">
               {isScoreFactor
                 ? 'Among the ranked drivers of the current reading.'
                 : 'Available to the model, not among the ranked drivers.'}
@@ -145,7 +146,7 @@ export function ParameterDetail() {
         </div>
 
         <Panel className="p-4">
-          <Eyebrow trailing="last 6 hours">Charting provenance</Eyebrow>
+          <SectionHeading trailing="last 6 hours">Charting provenance</SectionHeading>
           <div className="mt-4">
             <ProvenanceTrace history={history} definition={definition} />
           </div>
@@ -153,7 +154,7 @@ export function ParameterDetail() {
 
         <div className="flex flex-col gap-4 lg:flex-row">
           <Panel className="min-w-0 flex-[1.4] p-4">
-            <Eyebrow>Population default</Eyebrow>
+            <SectionHeading>Population default</SectionHeading>
             <div className="mt-3 flex flex-wrap items-end gap-8">
               <div>
                 <p className="text-2xs text-ink-500">Value substituted when missing</p>
@@ -183,7 +184,7 @@ export function ParameterDetail() {
                 </span>
               </div>
             </div>
-            <p className="mt-4 border-t border-rule-faint pt-2.5 text-2xs leading-relaxed text-ink-500">
+            <p className="mt-4 border-t border-rule-faint pt-2.5 text-xs leading-relaxed text-ink-500">
               Used only when no measured or recent value is available, and flagged wherever it
               drives a score.
               {!definition.rateIsMeasured && ' Prototype figure — not a published rate.'}
@@ -191,7 +192,7 @@ export function ParameterDetail() {
           </Panel>
 
           <Panel className="min-w-0 flex-1 p-4">
-            <Eyebrow>Parameter metadata</Eyebrow>
+            <SectionHeading>Parameter metadata</SectionHeading>
             <dl className="mt-2">
               {[
                 ['Unit', definition.unit],

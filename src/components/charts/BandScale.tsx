@@ -36,7 +36,7 @@ export function BandScale({ score, band, className }: BandScaleProps) {
         {BANDS.map((definition) => (
           <span
             key={definition.band}
-            className="text-[9px] font-semibold uppercase tracking-[0.05em] text-ink-400"
+            className="text-2xs font-semibold uppercase tracking-[0.05em] text-ink-400"
             style={{ width: `${(definition.scoreTo - definition.scoreFrom) * 100}%` }}
           >
             {SHORT_LABEL[definition.band]}
@@ -71,7 +71,7 @@ export function BandScale({ score, band, className }: BandScaleProps) {
         {BANDS.slice(1).map((definition) => (
           <span
             key={definition.band}
-            className="absolute -translate-x-1/2 font-mono text-[9px] tabular-nums text-ink-400"
+            className="absolute -translate-x-1/2 font-mono text-2xs tabular-nums text-ink-400"
             style={{ left: `${definition.scoreFrom * 100}%` }}
           >
             {formatScore(definition.scoreFrom)}

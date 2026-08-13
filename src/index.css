@@ -4,172 +4,183 @@
    PulseMind design tokens
    ===========================================================================
 
-   Three rules govern everything below.
-
-   1. MUTED FOR AREA, SATURATED FOR INK.
-      A band tint fills a cell and must never compete with the number sitting on
-      it, so tints are pale and every one of them carries the same dark text.
-      A band's ink — the dot, the mark, the band word — is small and must be
-      readable across a room, so it is saturated. The previous prototype used
-      mid-saturation for both, which is why it read flat.
-
-   2. COLOUR IS RESERVED FOR STATE.
-      Four band colours, one neutral ramp, one interactive accent. That is the
-      whole budget, and it follows the flight-deck convention of six or fewer.
-      Nothing is coloured for decoration. `--accent` means "you can act on this"
-      and is never used to signal clinical state.
-
-   3. NO MEANING IS CARRIED BY COLOUR ALONE.
-      Every band also carries its name in text. Every provenance state also
-      carries a glyph. The band tints are luminance-monotonic, so the severity
-      order survives greyscale, deuteranopia and protanopia.
-
-   Band tints follow the luminance ladder of the RCP NEWS2 observation chart,
-   the one national early-warning chart redesigned specifically so colour-blind
-   clinicians could read it. Chroma is pushed past the NEWS2 values; the ladder
-   is not.
-
-   LOW is deliberately neutral rather than green. On a bedside monitor green
-   already means "this lead is live", not "this patient is well".
+   Contrast figures in the comments below are measured against --page in the
+   default theme. Any token under 4.5:1 is marked NON-BODY and may only be used
+   for large text, disabled states or non-text UI. An earlier version of this
+   file shipped 4.28:1 and 2.99:1 inks with no such marking, and used them for
+   9px labels.
    =========================================================================== */
 
 :root {
-  /* --- Neutrals ---------------------------------------------------------
-     A cool cast at low chroma rather than a stock grey ramp. Pure black on
-     pure white is harsh on a screen that stays open for a twelve-hour shift. */
-  --ink-950: oklch(0.24 0.016 245);
-  --ink-800: oklch(0.36 0.015 245);
-  --ink-700: oklch(0.45 0.014 245);
-  --ink-500: oklch(0.58 0.012 245);
-  --ink-400: oklch(0.67 0.011 245);
-  --ink-300: oklch(0.76 0.009 245);
+  /* --- Ground -------------------------------------------------------------
+     --surface is deliberately identical to --page. There are no cards in this
+     product; regions are bounded by rules alone. The previous version had a
+     1.129:1 page-to-surface step, which is the white-card-on-grey substrate
+     every scaffolded dashboard ships, and it accounted for most of the
+     generic impression before a single label was read.
 
-  --surface: oklch(1 0 0);
-  --surface-sunken: oklch(0.978 0.003 245);
-  --page: oklch(0.958 0.004 245);
+     The cast is a chart-paper green-grey at hue 170. Chroma 0.008 at this
+     lightness is at the edge of perceptible over a large field, which is the
+     point: it should read as paper, not as a colour. */
+  --page: oklch(0.962 0.008 170);
+  --surface: oklch(0.962 0.008 170);
+  --surface-raised: oklch(0.978 0.006 170); /* drawer only */
+  --surface-sunken: oklch(0.940 0.010 170);
 
-  --rule: oklch(0.905 0.006 245);
-  --rule-strong: oklch(0.845 0.008 245);
-  --rule-faint: oklch(0.945 0.004 245);
+  --rule: oklch(0.898 0.012 170);
+  --rule-strong: oklch(0.836 0.016 170);
+  --rule-faint: oklch(0.928 0.010 170);
 
-  /* --- Interactive accent ------------------------------------------------
-     One colour, one job: this is actionable. Never used for clinical state. */
-  --accent: oklch(0.52 0.15 250);
-  --accent-hover: oklch(0.44 0.16 250);
-  --accent-tint: oklch(0.96 0.02 250);
-  --focus: oklch(0.72 0.18 250);
+  /* --- Chrome -------------------------------------------------------------
+     The petrol lives here, in the header and footer, at a lightness where
+     chroma 0.045 is actually visible. Below about L 0.25 the sRGB gamut caps
+     chroma at this hue around 0.04, so a darker "petrol" can only ever render
+     as a cool near-black. */
+  --chrome: oklch(0.285 0.045 195);
+  --chrome-raised: oklch(0.335 0.042 195);
+  --chrome-rule: oklch(0.392 0.038 195);
+  --chrome-ink: oklch(0.968 0.012 180); /* 13.9:1 on chrome */
+  --chrome-ink-dim: oklch(0.782 0.022 185); /* 7.1:1 on chrome */
 
-  /* --- Risk bands: area tints -------------------------------------------
-     Luminance-monotonic. All four take --ink-950 as their text colour, so
-     there is no text-colour flip anywhere on the scale. */
-  --band-low-tint: oklch(0.978 0.003 245);
-  --band-medium-tint: oklch(0.955 0.105 100);
-  --band-high-tint: oklch(0.858 0.125 62);
-  --band-critical-tint: oklch(0.735 0.155 24);
+  /* --- Ink ----------------------------------------------------------------
+     Petrol-black rather than slate, at a chroma that is actually visible. */
+  --ink-950: oklch(0.225 0.030 200); /* 15.2:1  body */
+  --ink-800: oklch(0.352 0.028 200); /* 10.0:1  body */
+  --ink-700: oklch(0.455 0.024 200); /*  7.0:1  body */
+  --ink-500: oklch(0.585 0.020 200); /*  3.7:1  NON-BODY: large text, icons, rules */
+  --ink-400: oklch(0.672 0.017 200); /*  2.6:1  NON-BODY: decorative marks only */
+  --ink-300: oklch(0.762 0.014 200); /*  1.8:1  NON-BODY: hairlines only */
 
-  /* --- Risk bands: ink ---------------------------------------------------
-     Saturated, for marks and words. All clear 4.5:1 on --surface. */
-  --band-low-ink: oklch(0.48 0.022 245);
-  --band-medium-ink: oklch(0.55 0.125 78);
-  --band-high-ink: oklch(0.52 0.165 45);
-  --band-critical-ink: oklch(0.49 0.195 25);
+  /* --- Interactive accent -------------------------------------------------
+     One colour, one job: this is actionable. It never signals clinical state. */
+  --accent: oklch(0.468 0.098 210); /* 6.6:1  body */
+  --accent-hover: oklch(0.388 0.104 210);
+  --accent-tint: oklch(0.930 0.030 202);
+  --focus: oklch(0.598 0.122 205);
 
-  /* Edge colour for a tinted cell, one step down in lightness from its tint. */
-  --band-low-edge: oklch(0.905 0.006 245);
-  --band-medium-edge: oklch(0.885 0.115 98);
-  --band-high-edge: oklch(0.785 0.135 58);
-  --band-critical-edge: oklch(0.665 0.165 24);
+  /* --- Risk bands ---------------------------------------------------------
+     Hues follow the RCP NEWS2 observation chart, the one national early-warning
+     chart redesigned so colour-blind clinicians could read it. Its ladder is
+     luminance-ordered, so severity survives greyscale and every form of
+     colour-vision deficiency. Chroma is pushed past the NEWS2 values; the
+     ordering is not.
 
-  /* --- Provenance --------------------------------------------------------
-     Four of the eleven parameters are majority cohort default, so this is not
-     a footnote — it is a primary channel. Each state carries ink, a glyph and
-     a word. Never opacity: a faded value reads as "disabled", and a stale
-     CRITICAL reading is not less important. */
-  --prov-measured: oklch(0.24 0.016 245);
-  --prov-carried: oklch(0.58 0.012 245);
-  --prov-default: oklch(0.52 0.115 75);
-  --prov-default-tint: oklch(0.965 0.045 95);
-  --prov-default-edge: oklch(0.885 0.09 90);
+     Tints are for area and all four take --ink-950, so there is no
+     text-colour flip anywhere on the scale. Ink is for marks and words.
 
-  /* --- Verified / negative ----------------------------------------------
-     Deliberately restrained. Used for record-verification only, never as a
-     "patient is fine" signal. */
-  --verified: oklch(0.48 0.09 165);
-  --verified-tint: oklch(0.972 0.02 165);
+     LOW is neutral, not green. On a bedside monitor green already means "this
+     lead is live", not "this patient is well". */
+  --band-low-tint: oklch(0.940 0.010 170);
+  --band-medium-tint: oklch(0.938 0.108 98);
+  --band-high-tint: oklch(0.842 0.126 62);
+  --band-critical-tint: oklch(0.726 0.152 24);
 
-  /* --- Type --------------------------------------------------------------
-     Three faces, three jobs, no overlap.
-       sans  — language. Labels, prose, buttons.
-       num   — quantity. Vitals, scores, percentages, axis ticks.
-               Atkinson Hyperlegible was drawn to pull apart the exact glyph
-               pairs this screen is exposed to: 0/O, 1/l/I, 5/S, 6/8.
-       mono  — machine identity. Patient IDs, timestamps, device tags.
-     A number you read as an amount and a number you read as a name should not
-     look the same. */
+  --band-low-ink: oklch(0.482 0.026 202); /* 6.4:1 */
+  --band-medium-ink: oklch(0.548 0.126 78); /* 4.9:1 */
+  --band-high-ink: oklch(0.518 0.166 45); /* 5.6:1 */
+  --band-critical-ink: oklch(0.486 0.196 25); /* 6.3:1 */
+
+  --band-low-edge: oklch(0.878 0.013 170);
+  --band-medium-edge: oklch(0.868 0.116 96);
+  --band-high-edge: oklch(0.772 0.136 58);
+  --band-critical-edge: oklch(0.652 0.164 24);
+
+  /* --- Provenance ---------------------------------------------------------
+     Four of the eleven parameters are majority cohort default, so this is a
+     primary channel rather than a footnote. Each state carries ink, a glyph
+     and a word. Never opacity: a faded value reads as disabled, and a stale
+     CRITICAL reading is not less important than a fresh one. */
+  --prov-measured: oklch(0.225 0.030 200);
+  --prov-carried: oklch(0.455 0.024 200);
+  --prov-default: oklch(0.512 0.118 74); /* 5.6:1 */
+  --prov-default-tint: oklch(0.948 0.052 94);
+  --prov-default-edge: oklch(0.862 0.096 90);
+
+  /* Record verification only. Never a "patient is fine" signal. */
+  --verified: oklch(0.462 0.096 168); /* 6.4:1 */
+  --verified-tint: oklch(0.944 0.030 168);
+
+  /* --- Type ---------------------------------------------------------------
+     Four faces, four jobs.
+       display — Big Shoulders. A condensed industrial gothic drawn for civic
+                 signage. Used only at the display tier, which is the only
+                 place typographic personality is visible at all.
+       sans    — Public Sans. UI text and prose.
+       num     — Atkinson Hyperlegible, drawn to pull apart the exact glyph
+                 pairs this screen is exposed to: 0/O, 1/l/I, 5/S, 6/8.
+       mono    — machine identity. IDs, timestamps, device tags.
+     A number read as an amount and a number read as a name should not look
+     the same. */
+  --font-display: 'Big Shoulders', 'Public Sans', ui-sans-serif, sans-serif;
   --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
   --font-num: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* --- Radius ------------------------------------------------------------
-     Near-square. A clinical table is not a card deck. */
   --radius-sharp: 0px;
   --radius-base: 2px;
   --radius-panel: 3px;
 }
 
-/* Night shift. Offered explicitly, never switched automatically: an ICU is a
-   lit room day and night, and a dark screen in a bright field is its own
-   problem. No four-hue ramp stays luminance-ordered on a dark ground, so in
-   this theme the band tint becomes an edge and the redundant text label and
-   segment indicator carry the ordering. */
-.dark {
-  --ink-950: oklch(0.96 0.004 245);
-  --ink-800: oklch(0.88 0.005 245);
-  --ink-700: oklch(0.78 0.006 245);
-  --ink-500: oklch(0.65 0.008 245);
-  --ink-400: oklch(0.55 0.009 245);
-  --ink-300: oklch(0.45 0.010 245);
+/* --- Night. Offered explicitly, never switched automatically: an ICU is a lit
+       room around the clock, so which ground suits a given bay is a judgement
+       the clinician makes. No four-hue ramp stays luminance-ordered on a dark
+       field, so here the text label and the segment meter carry the ordering
+       that colour cannot. --- */
+.night {
+  --page: oklch(0.168 0.018 195);
+  --surface: oklch(0.168 0.018 195);
+  --surface-raised: oklch(0.222 0.020 195);
+  --surface-sunken: oklch(0.208 0.019 195);
 
-  --surface: oklch(0.21 0.008 245);
-  --surface-sunken: oklch(0.17 0.008 245);
-  --page: oklch(0.145 0.008 245);
+  --rule: oklch(0.318 0.022 195);
+  --rule-strong: oklch(0.412 0.026 195);
+  --rule-faint: oklch(0.248 0.020 195);
 
-  --rule: oklch(0.31 0.010 245);
-  --rule-strong: oklch(0.40 0.012 245);
-  --rule-faint: oklch(0.25 0.009 245);
+  --chrome: oklch(0.242 0.038 195);
+  --chrome-raised: oklch(0.298 0.036 195);
+  --chrome-rule: oklch(0.372 0.032 195);
+  --chrome-ink: oklch(0.952 0.012 180);
+  --chrome-ink-dim: oklch(0.742 0.022 185);
 
-  --accent: oklch(0.72 0.14 250);
-  --accent-hover: oklch(0.80 0.13 250);
-  --accent-tint: oklch(0.28 0.05 250);
-  --focus: oklch(0.78 0.16 250);
+  --ink-950: oklch(0.958 0.012 185); /* 14.8:1 */
+  --ink-800: oklch(0.878 0.014 187); /* 11.6:1 */
+  --ink-700: oklch(0.772 0.016 190); /*  8.3:1 */
+  --ink-500: oklch(0.628 0.018 193); /*  4.9:1 */
+  --ink-400: oklch(0.522 0.018 195); /*  3.2:1  NON-BODY */
+  --ink-300: oklch(0.428 0.018 197); /*  2.2:1  NON-BODY */
 
-  --band-low-tint: oklch(0.24 0.010 245);
-  --band-medium-tint: oklch(0.30 0.065 95);
-  --band-high-tint: oklch(0.33 0.090 50);
-  --band-critical-tint: oklch(0.35 0.115 22);
+  --accent: oklch(0.762 0.098 200);
+  --accent-hover: oklch(0.848 0.086 200);
+  --accent-tint: oklch(0.278 0.042 199);
+  --focus: oklch(0.802 0.112 200);
 
-  --band-low-ink: oklch(0.70 0.020 245);
-  --band-medium-ink: oklch(0.82 0.130 92);
-  --band-high-ink: oklch(0.76 0.150 55);
-  --band-critical-ink: oklch(0.72 0.170 25);
+  --band-low-tint: oklch(0.252 0.016 195);
+  --band-medium-tint: oklch(0.338 0.072 92);
+  --band-high-tint: oklch(0.376 0.104 55);
+  --band-critical-tint: oklch(0.402 0.138 25);
 
-  --band-low-edge: oklch(0.36 0.012 245);
-  --band-medium-edge: oklch(0.45 0.095 95);
-  --band-high-edge: oklch(0.48 0.120 50);
-  --band-critical-edge: oklch(0.50 0.150 24);
+  --band-low-ink: oklch(0.722 0.028 197);
+  --band-medium-ink: oklch(0.848 0.142 92);
+  --band-high-ink: oklch(0.782 0.158 52);
+  --band-critical-ink: oklch(0.722 0.190 25);
 
-  --prov-measured: oklch(0.96 0.004 245);
-  --prov-carried: oklch(0.65 0.008 245);
-  --prov-default: oklch(0.78 0.130 82);
-  --prov-default-tint: oklch(0.29 0.055 88);
-  --prov-default-edge: oklch(0.42 0.085 88);
+  --band-low-edge: oklch(0.362 0.020 195);
+  --band-medium-edge: oklch(0.472 0.098 92);
+  --band-high-edge: oklch(0.508 0.126 53);
+  --band-critical-edge: oklch(0.532 0.162 25);
 
-  --verified: oklch(0.75 0.11 165);
-  --verified-tint: oklch(0.26 0.04 165);
+  --prov-measured: oklch(0.958 0.012 185);
+  --prov-carried: oklch(0.628 0.018 193);
+  --prov-default: oklch(0.818 0.132 82);
+  --prov-default-tint: oklch(0.302 0.058 86);
+  --prov-default-edge: oklch(0.442 0.090 84);
+
+  --verified: oklch(0.788 0.108 168);
+  --verified-tint: oklch(0.278 0.042 170);
 }
 
 /* ===========================================================================
-   Tailwind bridge — expose the tokens above as utilities
+   Tailwind bridge
    =========================================================================== */
 
 @theme inline {
@@ -181,8 +192,15 @@
   --color-ink-300: var(--ink-300);
 
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-surface-sunken: var(--surface-sunken);
   --color-page: var(--page);
+
+  --color-chrome: var(--chrome);
+  --color-chrome-raised: var(--chrome-raised);
+  --color-chrome-rule: var(--chrome-rule);
+  --color-chrome-ink: var(--chrome-ink);
+  --color-chrome-ink-dim: var(--chrome-ink-dim);
 
   --color-rule: var(--rule);
   --color-rule-strong: var(--rule-strong);
@@ -217,30 +235,36 @@
   --color-verified: var(--verified);
   --color-verified-tint: var(--verified-tint);
 
+  --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-num: var(--font-num);
   --font-mono: var(--font-mono);
 
-  /* Type scale, ratio ~1.15. Ten steps, and nothing may sit between them.
-     The floor is 11px: the previous prototype used 8.5px for live labels. */
-  --text-2xs: 0.6875rem; /* 11px — micro labels, axis ticks */
-  --text-xs: 0.75rem; /*    12px — captions, table column heads */
-  --text-sm: 0.8125rem; /*  13px — the dense-data default */
-  --text-base: 0.875rem; /* 14px — general UI */
-  --text-md: 1rem; /*        16px — the AI explanation, and only that */
-  --text-lg: 1.125rem; /*    18px */
-  --text-xl: 1.375rem; /*    22px */
-  --text-2xl: 1.75rem; /*    28px */
-  --text-3xl: 2.125rem; /*   34px */
-  --text-4xl: 2.75rem; /*    44px — the one hero score */
+  /* --- Type scale ---------------------------------------------------------
+     Two regimes, deliberately. Text sizes are packed tightly because a ward
+     board is a dense instrument and a 1.25 ratio down here would waste the
+     screen. Display sizes step at a strict 1.25, because that is where
+     hierarchy and typographic character actually become visible.
+
+     The floor is 11px and it is real: the previous version declared the same
+     floor and then shipped 9px and 10px labels in eight places.
+
+     TEXT     11 · 12.5 · 14 · 16
+     DISPLAY  20 · 25 · 31 · 39 · 49 · 61     (×1.25) */
+  --text-2xs: 0.6875rem; /* 11   micro labels, axis ticks — the floor */
+  --text-xs: 0.78125rem; /* 12.5 secondary data */
+  --text-sm: 0.875rem; /*   14   body default */
+  --text-base: 1rem; /*      16   prose, the AI explanation */
+  --text-lg: 1.25rem; /*     20 */
+  --text-xl: 1.5625rem; /*   25 */
+  --text-2xl: 1.9375rem; /*  31 */
+  --text-3xl: 2.4375rem; /*  39 */
+  --text-4xl: 3.0625rem; /*  49 */
+  --text-5xl: 3.8125rem; /*  61   display tier */
 
   --radius-sharp: var(--radius-sharp);
   --radius-base: var(--radius-base);
   --radius-panel: var(--radius-panel);
-
-  /* Density: rows sized for scanning, not for touch-first comfort. */
-  --spacing-row: 1.875rem; /* 30px — standard data row */
-  --spacing-row-tall: 2.5rem; /* 40px — patient row */
 }
 
 /* ===========================================================================
@@ -250,6 +274,7 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    background-color: var(--page);
   }
 
   body {
@@ -257,19 +282,18 @@
     color: var(--ink-950);
     font-family: var(--font-sans);
     font-size: var(--text-sm);
-    line-height: 1.45;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Every figure on screen is tabular, so decimal points form a real column
-     and a value updating in place never shifts its neighbours. */
+  /* Every figure is tabular, so decimal points form a real column and a value
+     updating in place never shifts its neighbours. */
   .font-num,
   .font-mono {
     font-variant-numeric: tabular-nums lining-nums;
   }
 
-  /* One focus treatment everywhere, and it is always visible. */
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 2px;
@@ -282,25 +306,55 @@
 }
 
 @layer utilities {
-  /* A section label. Small, spaced, and used sparingly — it is a structural
-     device, not decoration, so it only appears where a region genuinely
-     begins. */
-  .eyebrow {
-    font-size: var(--text-2xs);
+  /* The display tier. Big Shoulders is condensed, so it needs looser tracking
+     and a tighter line height than the UI face. */
+  .display {
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: 0.09em;
+    line-height: 0.95;
+    letter-spacing: 0.005em;
     text-transform: uppercase;
-    color: var(--ink-500);
   }
 
-  /* The measurement graticule behind a chart. This is a ruler, not texture:
-     it is only ever drawn where a value can be read off it, and every chart
-     that uses it also labels its interval. */
-  .graticule {
-    background-image:
-      linear-gradient(to right, var(--rule-faint) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--rule-faint) 1px, transparent 1px);
-    background-size: var(--graticule-x, 20px) var(--graticule-y, 20px);
+  /* A field label — small, tracked, and used to label a *value*, not a region.
+     Regions get real headings. An earlier version used this ~40 times as the
+     universal section device, which made tracked uppercase the dominant
+     texture of the whole product. */
+  .field-label {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-700);
+  }
+}
+
+/* ===========================================================================
+   The breath rhythm
+   ===========================================================================
+
+   Period is set per patient from the charted respiratory rate, passed in as an
+   inline custom property. A Tailwind template class would produce no CSS — the
+   scanner reads source text statically.
+
+   The 0% frame is the resting state, because the reduced-motion block below
+   freezes the animation there.
+
+   Why this is not an alarm indicator: IEC 60601-1-8 specifies alarm indicators
+   by flash frequency and duty cycle, 20–60% ON. This is a continuous ramp with
+   no OFF phase — 100% duty, which is the standard's non-flashing row — and its
+   rate comes from the patient's physiology rather than from severity. Only the
+   amplitude varies with band, and amplitude is not a channel the standard
+   speaks to.
+   =========================================================================== */
+
+@keyframes pm-breath {
+  0%,
+  100% {
+    transform: scaleY(0.22);
+  }
+  38% {
+    transform: scaleY(var(--breath-peak, 1));
   }
 }
 

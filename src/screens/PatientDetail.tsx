@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
-import type { Disposition } from '../types/clinical'
+import type { Assessment, Disposition } from '../types/clinical'
 import { isScored } from '../types/clinical'
-import { getAssessment, getScoreHistory } from '../data/feed'
+import { getScoreHistory } from '../data/feed'
+import { useAssessment } from '../data/WardProvider'
 import { bandMeaning } from '../data/bands'
 import { useClock } from '../hooks/useClock'
 import {
@@ -13,6 +14,7 @@ import {
 } from '../lib/bandStyles'
 import { formatClock, formatPercent, formatScore, pluralise } from '../lib/format'
 import { BandScale } from '../components/charts/BandScale'
+import { BreathRhythm } from '../components/charts/BreathRhythm'
 import { ObservationStrip } from '../components/charts/ObservationStrip'
 import { ContributorList } from '../components/detail/ContributorList'
 import { ExplanationPanel } from '../components/detail/ExplanationPanel'
@@ -20,8 +22,16 @@ import { ParameterTable } from '../components/detail/ParameterTable'
 import { PromptBanner } from '../components/detail/PromptBanner'
 import { PatientContextDrawer } from '../components/detail/PatientContextDrawer'
 import { BandTag } from '../components/ui/BandTag'
-import { Eyebrow } from '../components/ui/Eyebrow'
+import { SectionHeading } from '../components/ui/SectionHeading'
 import { Panel } from '../components/ui/Panel'
+
+/** The patient's charted respiratory rate, or null when it is not measured. */
+function respiratoryRateOf(assessment: Assessment): number | null {
+  const reading = assessment.parameters.find(
+    (parameter) => parameter.parameter_name === 'respiratory_rate_total',
+  )
+  return reading?.value ?? null
+}
 
 export function PatientDetail() {
   const { patientId = '' } = useParams()
@@ -30,7 +40,7 @@ export function PatientDetail() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [disposition, setDisposition] = useState<Disposition | null>(null)
 
-  const assessment = getAssessment(patientId)
+  const assessment = useAssessment(patientId)
 
   if (!assessment) {
     return (
@@ -90,7 +100,7 @@ export function PatientDetail() {
 
         {disposition && (
           <Panel className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-verified">
+            <span className="text-xs font-semibold uppercase tracking-[0.09em] text-verified">
               Review recorded
             </span>
             <span className="text-2xs text-ink-700">
@@ -112,7 +122,7 @@ export function PatientDetail() {
             <p className="text-2xs font-semibold uppercase tracking-[0.08em] text-ink-500">
               No score published for this reading
             </p>
-            <p className="mt-2 max-w-[70ch] text-2xs leading-relaxed text-ink-700">
+            <p className="mt-2 max-w-[70ch] text-xs leading-relaxed text-ink-700">
               {INSUFFICIENCY_REASON_LABEL[assessment.insufficiency_reason]} PulseMind reports
               nothing rather than a score that is not sufficiently about this patient. No risk
               level is published and no prompt is raised.
@@ -127,7 +137,7 @@ export function PatientDetail() {
         {scored && (
           <>
             <Panel className="p-4">
-              <Eyebrow trailing="last 6 hours">Assessment history</Eyebrow>
+              <SectionHeading trailing="last 6 hours">Assessment history</SectionHeading>
               <div className="mt-4">
                 <ObservationStrip observations={getScoreHistory(scored, now)} />
               </div>
@@ -135,7 +145,7 @@ export function PatientDetail() {
 
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
               <Panel className="flex-1 p-4 lg:max-w-[20rem]">
-                <Eyebrow>Respiratory-risk score</Eyebrow>
+                <SectionHeading>Respiratory-risk score</SectionHeading>
                 <div className="mt-4 flex items-end gap-3">
                   <span className="font-num text-4xl leading-none tabular-nums text-ink-950">
                     {formatScore(scored.risk_score)}
@@ -145,7 +155,7 @@ export function PatientDetail() {
                     <br />6 hours
                   </span>
                 </div>
-                <p className="mt-3 text-2xs leading-relaxed text-ink-500">
+                <p className="mt-3 text-xs leading-relaxed text-ink-500">
                   {bandMeaning(scored.risk_level)}
                 </p>
                 <BandScale
@@ -156,16 +166,19 @@ export function PatientDetail() {
               </Panel>
 
               <Panel className="flex-1 p-4 lg:max-w-[22rem]">
-                <Eyebrow>Reading state</Eyebrow>
+                <SectionHeading>Reading state</SectionHeading>
                 <dl className="mt-2">
                   {[
                     ['Published band', scored.risk_level],
                     ['Band state', BAND_STATE_LABEL[scored.band_state]],
                     ['Held for', pluralise(scored.readings_in_state, 'reading')],
                     ['Score alone implies', scored.instant_level],
+                    // Named "model inputs" on purpose. This is a share over the model's
+                    // whole feature set, not over the eleven parameters shown below,
+                    // and the two figures are never equal.
                     [
-                      'Data quality',
-                      `${formatPercent(scored.imputed_share)} defaulted · ${formatPercent(scored.documentation_share)} charting`,
+                      'Model inputs defaulted',
+                      `${formatPercent(scored.imputed_share)} · ${formatPercent(scored.documentation_share)} charting`,
                     ],
                   ].map(([label, value]) => (
                     <div
@@ -179,13 +192,28 @@ export function PatientDetail() {
                     </div>
                   ))}
                 </dl>
-                <p className="mt-2 border-t border-rule-faint pt-2.5 text-[10px] leading-relaxed text-ink-400">
+                <p className="mt-2 border-t border-rule-faint pt-2.5 text-xs leading-relaxed text-ink-500">
                   {BAND_STATE_MEANING[scored.band_state]}
                 </p>
+
+                {/* The rhythm runs at this patient's charted respiratory rate. Band sets
+                    only how deep the breath is. */}
+                <div className="mt-4 border-t border-rule-faint pt-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="field-label">Ventilation rhythm</p>
+                    <p className="font-num text-sm tabular-nums text-ink-950">
+                      {respiratoryRateOf(scored) ?? '—'}
+                      <span className="ml-1 font-sans text-2xs text-ink-500">breaths/min</span>
+                    </p>
+                  </div>
+                  <div className="mt-2">
+                    <BreathRhythm assessment={scored} band={scored.risk_level} />
+                  </div>
+                </div>
               </Panel>
 
               <Panel className="min-w-0 flex-[1.6] p-4">
-                <Eyebrow trailing="point-in-time · this reading">Ranked factors</Eyebrow>
+                <SectionHeading trailing="point-in-time · this reading">Ranked factors</SectionHeading>
                 <div className="mt-2">
                   <ContributorList contributors={scored.contributors} />
                 </div>
@@ -194,14 +222,14 @@ export function PatientDetail() {
 
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
               <Panel className="min-w-0 flex-[1.6] p-4">
-                <Eyebrow>Plain-language explanation</Eyebrow>
+                <SectionHeading>Plain-language explanation</SectionHeading>
                 <div className="mt-3">
                   <ExplanationPanel explanation={scored.explanation} />
                 </div>
               </Panel>
 
               <Panel className="min-w-0 flex-1 p-4">
-                <Eyebrow>Guideline references</Eyebrow>
+                <SectionHeading>Guideline references</SectionHeading>
                 {scored.citations.length > 0 ? (
                   <>
                     <ul className="mt-2">
@@ -210,16 +238,16 @@ export function PatientDetail() {
                           key={citation.source}
                           className="border-t border-rule-faint py-2.5 first:border-t-0"
                         >
-                          <p className="text-2xs leading-relaxed text-ink-800">
+                          <p className="text-xs leading-relaxed text-ink-800">
                             {citation.claim}
                           </p>
-                          <p className="mt-1 font-mono text-[10px] text-ink-400">
+                          <p className="mt-1 font-mono text-xs text-ink-400">
                             {citation.source}
                           </p>
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-2 border-t border-rule-faint pt-2.5 text-[10px] text-ink-400">
+                    <p className="mt-2 border-t border-rule-faint pt-2.5 text-xs text-ink-400">
                       Retrieved from a fixed approved library — not generated. Prototype uses
                       sample citations.
                     </p>
@@ -235,7 +263,7 @@ export function PatientDetail() {
         )}
 
         <Panel className="p-4">
-          <Eyebrow trailing={`synchronised ${formatClock(now)}`}>Respiratory parameters</Eyebrow>
+          <SectionHeading trailing={`synchronised ${formatClock(now)}`}>Respiratory parameters</SectionHeading>
           <div className="mt-3">
             <ParameterTable
               patientId={assessment.patient_id}

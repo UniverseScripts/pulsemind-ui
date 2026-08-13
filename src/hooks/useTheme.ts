@@ -5,12 +5,11 @@ export type Theme = 'day' | 'night'
 const STORAGE_KEY = 'pulsemind-theme'
 
 /**
- * Day or night theme.
+ * Day or night ground.
  *
- * Light is the default and it is never switched automatically. An ICU is a lit room
- * around the clock, so a dark screen in a bright bay is its own legibility problem —
- * night mode is a choice the clinician makes, not something inferred from the hour or
- * from an OS preference.
+ * Day is the default and neither is ever selected automatically. An ICU is a lit room
+ * around the clock, so which ground suits a given bay is a judgement the clinician
+ * makes, not something inferred from the hour or from an OS preference.
  */
 export function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -18,7 +17,7 @@ export function useTheme(): [Theme, () => void] {
   })
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'night')
+    document.documentElement.classList.toggle('night', theme === 'night')
     window.localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
 
