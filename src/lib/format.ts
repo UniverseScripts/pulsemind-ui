@@ -40,6 +40,22 @@ export function formatAge(minutes: number | null): string {
   return remainder === 0 ? `${hours} h` : `${hours} h ${remainder} min`
 }
 
+/**
+ * How stale a reading is, phrased as elapsed time: "just now", "14 min ago".
+ *
+ * Separate from `formatAge` because appending "ago" to its output produces
+ * "just now ago" — caught by driving the real UI rather than by reading the code.
+ */
+export function formatAgo(minutes: number | null): string {
+  if (minutes === null) {
+    return '—'
+  }
+  if (minutes < 1) {
+    return 'just now'
+  }
+  return `${formatAge(minutes)} ago`
+}
+
 /** Wall clock in 24-hour form: "14:22:07" */
 export function formatClock(date: Date, withSeconds = true): string {
   const hours = String(date.getHours()).padStart(2, '0')

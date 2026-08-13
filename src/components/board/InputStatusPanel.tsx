@@ -1,7 +1,7 @@
 import type { DeviceState, InputDevice } from '../../types/clinical'
 import { useWard } from '../../data/WardProvider'
 import { cn } from '../../lib/cn'
-import { formatAge, minutesSince } from '../../lib/format'
+import { formatAgo, minutesSince } from '../../lib/format'
 import { SectionHeading } from '../ui/SectionHeading'
 import { Panel } from '../ui/Panel'
 
@@ -65,7 +65,7 @@ export function InputStatusPanel({ devices, now }: InputStatusPanelProps) {
                   {STATE_LABEL[device.state]}
                 </p>
                 <p className="font-mono text-2xs tabular-nums text-ink-500">
-                  {formatAge(minutesSince(device.last_signal_at, now))} ago
+                  {formatAgo(minutesSince(device.last_signal_at, now))}
                 </p>
               </div>
             </li>
