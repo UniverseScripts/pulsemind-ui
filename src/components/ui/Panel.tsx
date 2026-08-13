@@ -11,9 +11,12 @@ interface PanelProps {
 }
 
 /**
- * A ruled container. Hairline border, near-square corners, no shadow — depth is
- * carried by background value, which costs no pixels and does not imply elevation
- * that isn't there.
+ * A ruled region.
+ *
+ * There is no card here. `--surface` is identical to `--page`, so this draws a boundary
+ * and nothing else — no fill, no shadow, no elevation. The previous version painted a
+ * white card on a light grey page, and that one luminance step was most of what made
+ * the product look like every other scaffolded dashboard.
  */
 export function Panel({ children, className, sunken = false, dashed = false }: PanelProps) {
   return (
@@ -21,7 +24,7 @@ export function Panel({ children, className, sunken = false, dashed = false }: P
       className={cn(
         'rounded-[3px] border',
         dashed ? 'border-dashed border-rule-strong' : 'border-rule',
-        sunken ? 'bg-surface-sunken' : 'bg-surface',
+        sunken && 'bg-surface-sunken',
         className,
       )}
     >

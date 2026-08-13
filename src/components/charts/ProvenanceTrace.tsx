@@ -56,7 +56,7 @@ export function ProvenanceTrace({ history, definition }: ProvenanceTraceProps) {
       <div className="flex gap-2">
         <div className="flex w-10 shrink-0 flex-col-reverse justify-between py-[1px] text-right">
           {ticks.map((fraction) => (
-            <span key={fraction} className="font-mono text-[9px] tabular-nums text-ink-400">
+            <span key={fraction} className="font-mono text-2xs tabular-nums text-ink-400">
               {(low + (high - low) * fraction).toFixed(definition.decimals)}
             </span>
           ))}
@@ -112,7 +112,7 @@ export function ProvenanceTrace({ history, definition }: ProvenanceTraceProps) {
             )}
           </div>
 
-          <div className="mt-1.5 flex justify-between font-mono text-[9px] tabular-nums text-ink-400">
+          <div className="mt-1.5 flex justify-between font-mono text-2xs tabular-nums text-ink-400">
             <span>{formatClock(new Date(history[0].assessed_at), false)}</span>
             <span>{formatClock(new Date(history[history.length - 1].assessed_at), false)}</span>
           </div>
@@ -122,17 +122,17 @@ export function ProvenanceTrace({ history, definition }: ProvenanceTraceProps) {
       <figcaption className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule-faint pt-2.5">
         <span className="flex items-center gap-1.5">
           <span className="h-[2px] w-4" style={{ background: STROKE.measured }} />
-          <span className="text-[10px] text-ink-500">Measured</span>
+          <span className="text-xs text-ink-500">Measured</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-[2px] w-4" style={{ background: STROKE.carried_forward }} />
-          <span className="text-[10px] text-ink-500">Carried forward</span>
+          <span className="text-xs text-ink-500">Carried forward</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-[2px] w-4" style={{ background: STROKE.cohort_default }} />
-          <span className="text-[10px] text-ink-500">Population default</span>
+          <span className="text-xs text-ink-500">Population default</span>
         </span>
-        <span className="min-w-0 flex-1 text-right text-[10px] text-ink-400">
+        <span className="min-w-0 flex-1 text-right text-xs text-ink-400">
           Shows when each value was measured, reused or defaulted — not a clinical trend.
         </span>
       </figcaption>

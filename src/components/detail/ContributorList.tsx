@@ -39,7 +39,7 @@ export function ContributorList({ contributors }: ContributorListProps) {
           key={contributor.rank}
           className="flex items-start gap-3 border-t border-rule-faint py-2.5 first:border-t-0"
         >
-          <span className="w-5 shrink-0 pt-[3px] font-mono text-[10px] tabular-nums text-ink-300">
+          <span className="w-5 shrink-0 pt-[3px] font-mono text-xs tabular-nums text-ink-300">
             {String(contributor.rank).padStart(2, '0')}
           </span>
 
@@ -48,7 +48,7 @@ export function ContributorList({ contributors }: ContributorListProps) {
             <span className="mt-1 flex flex-wrap items-center gap-1.5">
               <span
                 className={cn(
-                  'rounded-[2px] border px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-[0.06em]',
+                  'rounded-[2px] border px-1.5 py-[1px] text-2xs font-medium uppercase tracking-[0.06em]',
                   contributor.kind === 'documentation'
                     ? 'border-rule-strong bg-surface-sunken text-ink-700'
                     : 'border-rule bg-surface text-ink-500',
@@ -57,7 +57,7 @@ export function ContributorList({ contributors }: ContributorListProps) {
                 {contributor.kind}
               </span>
               {contributor.is_imputed && (
-                <span className="inline-flex items-center gap-1 rounded-[2px] border border-prov-default-edge bg-prov-default-tint px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-[0.06em] text-prov-default">
+                <span className="inline-flex items-center gap-1 rounded-[2px] border border-prov-default-edge bg-prov-default-tint px-1.5 py-[1px] text-2xs font-medium uppercase tracking-[0.06em] text-prov-default">
                   <AlertTriangle size={9} strokeWidth={2.5} />
                   Population default
                 </span>

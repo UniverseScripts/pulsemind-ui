@@ -2,11 +2,12 @@ import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import {
   dataLimitedPatients,
-  getWard,
+
   hasOpenPrompt,
   matchesQuery,
   rankedPatients,
 } from '../data/feed'
+import { useWard } from '../data/WardProvider'
 import { useClock } from '../hooks/useClock'
 import { cn } from '../lib/cn'
 import { pluralise } from '../lib/format'
@@ -14,7 +15,8 @@ import { DataLimitedRow } from '../components/board/DataLimitedRow'
 import { InputStatusPanel } from '../components/board/InputStatusPanel'
 import { PatientRow } from '../components/board/PatientRow'
 import { SelectedPatientPanel } from '../components/board/SelectedPatientPanel'
-import { Eyebrow } from '../components/ui/Eyebrow'
+import { SectionHeading } from '../components/ui/SectionHeading'
+import { WardScale } from '../components/board/WardScale'
 import { Panel } from '../components/ui/Panel'
 
 type Filter = 'all' | 'awaiting' | 'limited'
@@ -27,7 +29,7 @@ const FILTERS: Array<{ key: Filter; label: string }> = [
 
 export function PatientOverviewBoard() {
   const now = useClock()
-  const ward = getWard()
+  const { ward } = useWard()
 
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
@@ -50,18 +52,29 @@ export function PatientOverviewBoard() {
 
   return (
     <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <Eyebrow>Patient overview</Eyebrow>
-          <h1 className="mt-1.5 text-xl font-semibold tracking-[-0.015em] text-ink-950">
-            Adult ventilated ICU patients
-          </h1>
-        </div>
-        <p className="max-w-md text-2xs leading-relaxed text-ink-500">
+      {/* The one display-tier element on the screen. Everything else is text. */}
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <h1 className="display max-w-[14ch] text-4xl text-ink-950 sm:text-5xl">
+          Adult ventilated ICU patients
+        </h1>
+        <p className="max-w-sm text-xs leading-relaxed text-ink-700">
           A prompt is raised only when a band change is sustained and confirmed — roughly one
           in every 34 readings. A patient held at HIGH for six hours is one interruption, not
           seventy.
         </p>
+      </div>
+
+      {/* The ward on one calibrated axis. Segment widths are the real cut points, so the
+          geometry says something true: most readings sit in a band that occupies an
+          eighth of the scale, and nearly half the scale is CRITICAL. */}
+      <div className="mb-5 border-y border-rule py-4">
+        <SectionHeading
+          className="mb-4"
+          trailing={`${ranked.length} scored · ${limited.length} data-limited`}
+        >
+          Respiratory-risk scale
+        </SectionHeading>
+        <WardScale patients={ranked} selectedId={selectedId} onSelect={setSelectedId} />
       </div>
 
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
@@ -103,12 +116,12 @@ export function PatientOverviewBoard() {
 
           {showRanked && (
             <div>
-              <Eyebrow
+              <SectionHeading
                 className="mb-2 px-1"
                 trailing={`${pluralise(rankedRows.length, 'patient')} · prompt first, then band`}
               >
                 Triage board · ranked
-              </Eyebrow>
+              </SectionHeading>
               <Panel className="overflow-hidden">
                 {rankedRows.map((assessment) => (
                   <PatientRow
@@ -125,12 +138,12 @@ export function PatientOverviewBoard() {
 
           {showLimited && (
             <div className="mt-1">
-              <Eyebrow
+              <SectionHeading
                 className="mb-2 px-1"
                 trailing={`${pluralise(limited.length, 'patient')} below the sufficiency floor`}
               >
                 Data-limited · not ranked
-              </Eyebrow>
+              </SectionHeading>
               <Panel dashed sunken className="overflow-hidden">
                 {limited.map((assessment) => (
                   <DataLimitedRow
@@ -158,7 +171,7 @@ export function PatientOverviewBoard() {
 
         <aside className="flex w-full shrink-0 flex-col gap-4 xl:w-[23rem]">
           <SelectedPatientPanel assessment={selected} now={now} />
-          <InputStatusPanel devices={selected.devices} />
+          <InputStatusPanel devices={selected.devices} now={now} />
         </aside>
       </div>
     </div>

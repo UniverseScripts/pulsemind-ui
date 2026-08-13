@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import type { InputDevice } from '../../types/clinical'
 import { getPatientContext } from '../../data/feed'
 import { cn } from '../../lib/cn'
-import { Eyebrow } from '../ui/Eyebrow'
+import { SectionHeading } from '../ui/SectionHeading'
 
 interface PatientContextDrawerProps {
   patientId: string
@@ -95,13 +95,13 @@ export function PatientContextDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-4">
-          <p className="rounded-[2px] border border-verified/25 bg-verified-tint px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.07em] text-verified">
+          <p className="rounded-[2px] border border-verified/25 bg-verified-tint px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.07em] text-verified">
             Patient-to-bed association verified
           </p>
 
           {sections.map(([title, rows]) => (
             <section key={title} className="mt-5">
-              <Eyebrow className="mb-1">{title}</Eyebrow>
+              <SectionHeading className="mb-1">{title}</SectionHeading>
               <dl>
                 {rows.map(([label, value]) => (
                   <div
@@ -117,7 +117,7 @@ export function PatientContextDrawer({
           ))}
 
           <section className="mt-5">
-            <Eyebrow className="mb-1">Medical history</Eyebrow>
+            <SectionHeading className="mb-1">Medical history</SectionHeading>
             {context.comorbidities.length > 0 ? (
               <ul>
                 {context.comorbidities.map((comorbidity) => (
@@ -126,7 +126,7 @@ export function PatientContextDrawer({
                     className="flex items-baseline justify-between gap-3 border-t border-rule-faint py-2"
                   >
                     <span className="text-2xs text-ink-950">{comorbidity.label}</span>
-                    <span className="shrink-0 font-mono text-[10px] text-ink-400">
+                    <span className="shrink-0 font-mono text-xs text-ink-400">
                       ICD {comorbidity.icd_code}
                     </span>
                   </li>
@@ -145,7 +145,7 @@ export function PatientContextDrawer({
               <span className="text-2xs leading-snug text-ink-500">
                 Charlson Comorbidity Index
                 <br />
-                <span className="text-[10px] text-ink-400">
+                <span className="text-xs text-ink-400">
                   Recorded context — not a PulseMind prediction.
                 </span>
               </span>
@@ -153,7 +153,7 @@ export function PatientContextDrawer({
           </section>
 
           <section className="mt-5">
-            <Eyebrow className="mb-1">Connected sources</Eyebrow>
+            <SectionHeading className="mb-1">Connected sources</SectionHeading>
             <ul>
               {devices.map((device) => (
                 <li
@@ -161,7 +161,7 @@ export function PatientContextDrawer({
                   className="flex items-baseline justify-between gap-3 border-t border-rule-faint py-2"
                 >
                   <span className="text-2xs text-ink-950">{device.label}</span>
-                  <span className="shrink-0 font-mono text-[10px] text-ink-400">
+                  <span className="shrink-0 font-mono text-xs text-ink-400">
                     {device.device_make_model} · {device.state.toLowerCase()}
                   </span>
                 </li>
@@ -171,7 +171,7 @@ export function PatientContextDrawer({
         </div>
 
         <div className="shrink-0 border-t border-rule px-4 py-3">
-          <p className="text-[10px] leading-relaxed text-ink-400">
+          <p className="text-xs leading-relaxed text-ink-400">
             Read-only association. PulseMind receives data but sends no commands and changes
             no ventilator settings.
           </p>

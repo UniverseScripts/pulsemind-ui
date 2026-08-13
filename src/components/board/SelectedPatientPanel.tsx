@@ -6,7 +6,7 @@ import { getScoreHistory } from '../../data/feed'
 import { bandMeaning } from '../../data/bands'
 import { formatPercent, formatScore } from '../../lib/format'
 import { BandTag } from '../ui/BandTag'
-import { Eyebrow } from '../ui/Eyebrow'
+import { SectionHeading } from '../ui/SectionHeading'
 import { Panel } from '../ui/Panel'
 import { ObservationStrip } from '../charts/ObservationStrip'
 
@@ -19,7 +19,7 @@ interface SelectedPatientPanelProps {
 export function SelectedPatientPanel({ assessment, now }: SelectedPatientPanelProps) {
   return (
     <Panel className="p-4">
-      <Eyebrow trailing={assessment.patient_id}>Selected patient</Eyebrow>
+      <SectionHeading trailing={assessment.patient_id}>Selected patient</SectionHeading>
 
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-mono text-lg font-medium text-ink-950">{assessment.bed_code}</h2>
@@ -41,18 +41,18 @@ export function SelectedPatientPanel({ assessment, now }: SelectedPatientPanelPr
             </span>
           </div>
 
-          <p className="mt-3 text-2xs leading-relaxed text-ink-500">
+          <p className="mt-3 text-xs leading-relaxed text-ink-500">
             {bandMeaning(assessment.risk_level)}
           </p>
 
           <div className="mt-5 border-t border-rule-faint pt-4">
-            <Eyebrow className="mb-3">Assessment history</Eyebrow>
+            <SectionHeading className="mb-3">Assessment history</SectionHeading>
             <ObservationStrip observations={getScoreHistory(assessment, now)} />
           </div>
 
           {assessment.contributors.length > 0 && (
             <div className="mt-5 border-t border-rule-faint pt-4">
-              <Eyebrow className="mb-2">Largest contribution</Eyebrow>
+              <SectionHeading className="mb-2">Largest contribution</SectionHeading>
               <p className="text-sm text-ink-950">{assessment.contributors[0].feature_name}</p>
               <p className="mt-0.5 font-mono text-2xs tabular-nums text-ink-500">
                 {formatPercent(assessment.contributors[0].share_of_decision, 1)} of this reading
@@ -64,7 +64,7 @@ export function SelectedPatientPanel({ assessment, now }: SelectedPatientPanelPr
       ) : (
         <div className="mt-4 border-t border-rule-faint pt-4">
           <p className="text-sm text-ink-950">No score published for this reading.</p>
-          <p className="mt-2 text-2xs leading-relaxed text-ink-500">
+          <p className="mt-2 text-xs leading-relaxed text-ink-500">
             Too much of this reading rests on population defaults rather than measurements of
             this patient, so PulseMind publishes nothing rather than a number that is not
             about them. No prompt is raised.

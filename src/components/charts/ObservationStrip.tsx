@@ -47,7 +47,7 @@ export function ObservationStrip({ observations, className }: ObservationStripPr
         <div className="flex w-14 shrink-0 flex-col justify-between py-[3px]">
           {LANES.map((band) => (
             <div key={band} className="flex h-6 items-center">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-400">
+              <span className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-400">
                 {band}
               </span>
             </div>
@@ -112,7 +112,7 @@ export function ObservationStrip({ observations, className }: ObservationStripPr
               <span
                 key={index}
                 className={cn(
-                  'text-center font-mono text-[9px] tabular-nums',
+                  'text-center font-mono text-2xs tabular-nums',
                   index === active ? 'text-ink-700' : 'text-ink-300',
                 )}
               >
