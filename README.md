@@ -48,6 +48,23 @@ including several that are patient-safety constraints rather than preferences: n
 language anywhere, no flashing indicators, red reserved for the CRITICAL band alone, and
 provenance travelling with every value it belongs to.
 
+## Deploying
+
+`vercel.json` configures a static SPA deploy. Vercel needs no dashboard settings beyond
+connecting the repo.
+
+The routing rewrite is the load-bearing part: the app uses `BrowserRouter`, so without it
+a direct load or refresh of `/patient/PM-204` returns 404. `/assets/*` is deliberately
+excluded from the rewrite so a missing chunk 404s rather than returning `index.html`
+with a 200.
+
+Because `pnpm build` runs `tsc --noEmit` first, **a type error fails the deploy** rather
+than shipping.
+
+`X-Robots-Tag: noindex, nofollow` is set — this is a prototype showing patient-shaped
+data and should not appear in search results. Remove that header if the deployment is
+ever meant to be public.
+
 ## Data
 
 All data is simulated. No MIMIC-IV or other credentialed data appears in this repo, and
