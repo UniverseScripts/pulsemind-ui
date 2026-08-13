@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
-import type { Assessment, Disposition } from '../types/clinical'
+import type { Disposition } from '../types/clinical'
 import { isScored } from '../types/clinical'
 import { getScoreHistory } from '../data/feed'
 import { useAssessment } from '../data/WardProvider'
@@ -24,14 +24,6 @@ import { PatientContextDrawer } from '../components/detail/PatientContextDrawer'
 import { BandTag } from '../components/ui/BandTag'
 import { SectionHeading } from '../components/ui/SectionHeading'
 import { Panel } from '../components/ui/Panel'
-
-/** The patient's charted respiratory rate, or null when it is not measured. */
-function respiratoryRateOf(assessment: Assessment): number | null {
-  const reading = assessment.parameters.find(
-    (parameter) => parameter.parameter_name === 'respiratory_rate_total',
-  )
-  return reading?.value ?? null
-}
 
 export function PatientDetail() {
   const { patientId = '' } = useParams()
@@ -163,6 +155,13 @@ export function PatientDetail() {
                   band={scored.risk_level}
                   className="mt-5 border-t border-rule-faint pt-4"
                 />
+
+                {/* Runs at this patient's charted respiratory rate. The band sets only
+                    how deep the breath is — severity never sets the rate. */}
+                <div className="mt-5 border-t border-rule-faint pt-4">
+                  <p className="field-label mb-2">Ventilation rhythm</p>
+                  <BreathRhythm assessment={scored} band={scored.risk_level} />
+                </div>
               </Panel>
 
               <Panel className="flex-1 p-4 lg:max-w-[22rem]">
@@ -196,20 +195,6 @@ export function PatientDetail() {
                   {BAND_STATE_MEANING[scored.band_state]}
                 </p>
 
-                {/* The rhythm runs at this patient's charted respiratory rate. Band sets
-                    only how deep the breath is. */}
-                <div className="mt-4 border-t border-rule-faint pt-3">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="field-label">Ventilation rhythm</p>
-                    <p className="font-num text-sm tabular-nums text-ink-950">
-                      {respiratoryRateOf(scored) ?? '—'}
-                      <span className="ml-1 font-sans text-2xs text-ink-500">breaths/min</span>
-                    </p>
-                  </div>
-                  <div className="mt-2">
-                    <BreathRhythm assessment={scored} band={scored.risk_level} />
-                  </div>
-                </div>
               </Panel>
 
               <Panel className="min-w-0 flex-[1.6] p-4">

@@ -8,6 +8,7 @@ import { formatPercent, formatScore } from '../../lib/format'
 import { BandTag } from '../ui/BandTag'
 import { SectionHeading } from '../ui/SectionHeading'
 import { Panel } from '../ui/Panel'
+import { BreathRhythm } from '../charts/BreathRhythm'
 import { ObservationStrip } from '../charts/ObservationStrip'
 
 interface SelectedPatientPanelProps {
@@ -44,6 +45,14 @@ export function SelectedPatientPanel({ assessment, now }: SelectedPatientPanelPr
           <p className="mt-3 text-xs leading-relaxed text-ink-500">
             {bandMeaning(assessment.risk_level)}
           </p>
+
+          {/* One instance only, on the selected patient. Never on the rows themselves:
+              viewers track three to four moving objects, and sub-Hz rate differences are
+              imperceptible, so a breathing board would be noise carrying no signal. */}
+          <div className="mt-5 border-t border-rule-faint pt-4">
+            <SectionHeading className="mb-2">Ventilation</SectionHeading>
+            <BreathRhythm assessment={assessment} band={assessment.risk_level} size="rail" />
+          </div>
 
           <div className="mt-5 border-t border-rule-faint pt-4">
             <SectionHeading className="mb-3">Assessment history</SectionHeading>
