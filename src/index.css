@@ -1,0 +1,315 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   PulseMind design tokens
+   ===========================================================================
+
+   Three rules govern everything below.
+
+   1. MUTED FOR AREA, SATURATED FOR INK.
+      A band tint fills a cell and must never compete with the number sitting on
+      it, so tints are pale and every one of them carries the same dark text.
+      A band's ink — the dot, the mark, the band word — is small and must be
+      readable across a room, so it is saturated. The previous prototype used
+      mid-saturation for both, which is why it read flat.
+
+   2. COLOUR IS RESERVED FOR STATE.
+      Four band colours, one neutral ramp, one interactive accent. That is the
+      whole budget, and it follows the flight-deck convention of six or fewer.
+      Nothing is coloured for decoration. `--accent` means "you can act on this"
+      and is never used to signal clinical state.
+
+   3. NO MEANING IS CARRIED BY COLOUR ALONE.
+      Every band also carries its name in text. Every provenance state also
+      carries a glyph. The band tints are luminance-monotonic, so the severity
+      order survives greyscale, deuteranopia and protanopia.
+
+   Band tints follow the luminance ladder of the RCP NEWS2 observation chart,
+   the one national early-warning chart redesigned specifically so colour-blind
+   clinicians could read it. Chroma is pushed past the NEWS2 values; the ladder
+   is not.
+
+   LOW is deliberately neutral rather than green. On a bedside monitor green
+   already means "this lead is live", not "this patient is well".
+   =========================================================================== */
+
+:root {
+  /* --- Neutrals ---------------------------------------------------------
+     A cool cast at low chroma rather than a stock grey ramp. Pure black on
+     pure white is harsh on a screen that stays open for a twelve-hour shift. */
+  --ink-950: oklch(0.24 0.016 245);
+  --ink-800: oklch(0.36 0.015 245);
+  --ink-700: oklch(0.45 0.014 245);
+  --ink-500: oklch(0.58 0.012 245);
+  --ink-400: oklch(0.67 0.011 245);
+  --ink-300: oklch(0.76 0.009 245);
+
+  --surface: oklch(1 0 0);
+  --surface-sunken: oklch(0.978 0.003 245);
+  --page: oklch(0.958 0.004 245);
+
+  --rule: oklch(0.905 0.006 245);
+  --rule-strong: oklch(0.845 0.008 245);
+  --rule-faint: oklch(0.945 0.004 245);
+
+  /* --- Interactive accent ------------------------------------------------
+     One colour, one job: this is actionable. Never used for clinical state. */
+  --accent: oklch(0.52 0.15 250);
+  --accent-hover: oklch(0.44 0.16 250);
+  --accent-tint: oklch(0.96 0.02 250);
+  --focus: oklch(0.72 0.18 250);
+
+  /* --- Risk bands: area tints -------------------------------------------
+     Luminance-monotonic. All four take --ink-950 as their text colour, so
+     there is no text-colour flip anywhere on the scale. */
+  --band-low-tint: oklch(0.978 0.003 245);
+  --band-medium-tint: oklch(0.955 0.105 100);
+  --band-high-tint: oklch(0.858 0.125 62);
+  --band-critical-tint: oklch(0.735 0.155 24);
+
+  /* --- Risk bands: ink ---------------------------------------------------
+     Saturated, for marks and words. All clear 4.5:1 on --surface. */
+  --band-low-ink: oklch(0.48 0.022 245);
+  --band-medium-ink: oklch(0.55 0.125 78);
+  --band-high-ink: oklch(0.52 0.165 45);
+  --band-critical-ink: oklch(0.49 0.195 25);
+
+  /* Edge colour for a tinted cell, one step down in lightness from its tint. */
+  --band-low-edge: oklch(0.905 0.006 245);
+  --band-medium-edge: oklch(0.885 0.115 98);
+  --band-high-edge: oklch(0.785 0.135 58);
+  --band-critical-edge: oklch(0.665 0.165 24);
+
+  /* --- Provenance --------------------------------------------------------
+     Four of the eleven parameters are majority cohort default, so this is not
+     a footnote — it is a primary channel. Each state carries ink, a glyph and
+     a word. Never opacity: a faded value reads as "disabled", and a stale
+     CRITICAL reading is not less important. */
+  --prov-measured: oklch(0.24 0.016 245);
+  --prov-carried: oklch(0.58 0.012 245);
+  --prov-default: oklch(0.52 0.115 75);
+  --prov-default-tint: oklch(0.965 0.045 95);
+  --prov-default-edge: oklch(0.885 0.09 90);
+
+  /* --- Verified / negative ----------------------------------------------
+     Deliberately restrained. Used for record-verification only, never as a
+     "patient is fine" signal. */
+  --verified: oklch(0.48 0.09 165);
+  --verified-tint: oklch(0.972 0.02 165);
+
+  /* --- Type --------------------------------------------------------------
+     Three faces, three jobs, no overlap.
+       sans  — language. Labels, prose, buttons.
+       num   — quantity. Vitals, scores, percentages, axis ticks.
+               Atkinson Hyperlegible was drawn to pull apart the exact glyph
+               pairs this screen is exposed to: 0/O, 1/l/I, 5/S, 6/8.
+       mono  — machine identity. Patient IDs, timestamps, device tags.
+     A number you read as an amount and a number you read as a name should not
+     look the same. */
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-num: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* --- Radius ------------------------------------------------------------
+     Near-square. A clinical table is not a card deck. */
+  --radius-sharp: 0px;
+  --radius-base: 2px;
+  --radius-panel: 3px;
+}
+
+/* Night shift. Offered explicitly, never switched automatically: an ICU is a
+   lit room day and night, and a dark screen in a bright field is its own
+   problem. No four-hue ramp stays luminance-ordered on a dark ground, so in
+   this theme the band tint becomes an edge and the redundant text label and
+   segment indicator carry the ordering. */
+.dark {
+  --ink-950: oklch(0.96 0.004 245);
+  --ink-800: oklch(0.88 0.005 245);
+  --ink-700: oklch(0.78 0.006 245);
+  --ink-500: oklch(0.65 0.008 245);
+  --ink-400: oklch(0.55 0.009 245);
+  --ink-300: oklch(0.45 0.010 245);
+
+  --surface: oklch(0.21 0.008 245);
+  --surface-sunken: oklch(0.17 0.008 245);
+  --page: oklch(0.145 0.008 245);
+
+  --rule: oklch(0.31 0.010 245);
+  --rule-strong: oklch(0.40 0.012 245);
+  --rule-faint: oklch(0.25 0.009 245);
+
+  --accent: oklch(0.72 0.14 250);
+  --accent-hover: oklch(0.80 0.13 250);
+  --accent-tint: oklch(0.28 0.05 250);
+  --focus: oklch(0.78 0.16 250);
+
+  --band-low-tint: oklch(0.24 0.010 245);
+  --band-medium-tint: oklch(0.30 0.065 95);
+  --band-high-tint: oklch(0.33 0.090 50);
+  --band-critical-tint: oklch(0.35 0.115 22);
+
+  --band-low-ink: oklch(0.70 0.020 245);
+  --band-medium-ink: oklch(0.82 0.130 92);
+  --band-high-ink: oklch(0.76 0.150 55);
+  --band-critical-ink: oklch(0.72 0.170 25);
+
+  --band-low-edge: oklch(0.36 0.012 245);
+  --band-medium-edge: oklch(0.45 0.095 95);
+  --band-high-edge: oklch(0.48 0.120 50);
+  --band-critical-edge: oklch(0.50 0.150 24);
+
+  --prov-measured: oklch(0.96 0.004 245);
+  --prov-carried: oklch(0.65 0.008 245);
+  --prov-default: oklch(0.78 0.130 82);
+  --prov-default-tint: oklch(0.29 0.055 88);
+  --prov-default-edge: oklch(0.42 0.085 88);
+
+  --verified: oklch(0.75 0.11 165);
+  --verified-tint: oklch(0.26 0.04 165);
+}
+
+/* ===========================================================================
+   Tailwind bridge — expose the tokens above as utilities
+   =========================================================================== */
+
+@theme inline {
+  --color-ink-950: var(--ink-950);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+  --color-ink-300: var(--ink-300);
+
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-page: var(--page);
+
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-rule-faint: var(--rule-faint);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tint: var(--accent-tint);
+  --color-focus: var(--focus);
+
+  --color-band-low-tint: var(--band-low-tint);
+  --color-band-medium-tint: var(--band-medium-tint);
+  --color-band-high-tint: var(--band-high-tint);
+  --color-band-critical-tint: var(--band-critical-tint);
+
+  --color-band-low-ink: var(--band-low-ink);
+  --color-band-medium-ink: var(--band-medium-ink);
+  --color-band-high-ink: var(--band-high-ink);
+  --color-band-critical-ink: var(--band-critical-ink);
+
+  --color-band-low-edge: var(--band-low-edge);
+  --color-band-medium-edge: var(--band-medium-edge);
+  --color-band-high-edge: var(--band-high-edge);
+  --color-band-critical-edge: var(--band-critical-edge);
+
+  --color-prov-measured: var(--prov-measured);
+  --color-prov-carried: var(--prov-carried);
+  --color-prov-default: var(--prov-default);
+  --color-prov-default-tint: var(--prov-default-tint);
+  --color-prov-default-edge: var(--prov-default-edge);
+
+  --color-verified: var(--verified);
+  --color-verified-tint: var(--verified-tint);
+
+  --font-sans: var(--font-sans);
+  --font-num: var(--font-num);
+  --font-mono: var(--font-mono);
+
+  /* Type scale, ratio ~1.15. Ten steps, and nothing may sit between them.
+     The floor is 11px: the previous prototype used 8.5px for live labels. */
+  --text-2xs: 0.6875rem; /* 11px — micro labels, axis ticks */
+  --text-xs: 0.75rem; /*    12px — captions, table column heads */
+  --text-sm: 0.8125rem; /*  13px — the dense-data default */
+  --text-base: 0.875rem; /* 14px — general UI */
+  --text-md: 1rem; /*        16px — the AI explanation, and only that */
+  --text-lg: 1.125rem; /*    18px */
+  --text-xl: 1.375rem; /*    22px */
+  --text-2xl: 1.75rem; /*    28px */
+  --text-3xl: 2.125rem; /*   34px */
+  --text-4xl: 2.75rem; /*    44px — the one hero score */
+
+  --radius-sharp: var(--radius-sharp);
+  --radius-base: var(--radius-base);
+  --radius-panel: var(--radius-panel);
+
+  /* Density: rows sized for scanning, not for touch-first comfort. */
+  --spacing-row: 1.875rem; /* 30px — standard data row */
+  --spacing-row-tall: 2.5rem; /* 40px — patient row */
+}
+
+/* ===========================================================================
+   Base
+   =========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--page);
+    color: var(--ink-950);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Every figure on screen is tabular, so decimal points form a real column
+     and a value updating in place never shifts its neighbours. */
+  .font-num,
+  .font-mono {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* One focus treatment everywhere, and it is always visible. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-base);
+  }
+
+  ::selection {
+    background: var(--accent-tint);
+  }
+}
+
+@layer utilities {
+  /* A section label. Small, spaced, and used sparingly — it is a structural
+     device, not decoration, so it only appears where a region genuinely
+     begins. */
+  .eyebrow {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  /* The measurement graticule behind a chart. This is a ruler, not texture:
+     it is only ever drawn where a value can be read off it, and every chart
+     that uses it also labels its interval. */
+  .graticule {
+    background-image:
+      linear-gradient(to right, var(--rule-faint) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--rule-faint) 1px, transparent 1px);
+    background-size: var(--graticule-x, 20px) var(--graticule-y, 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
